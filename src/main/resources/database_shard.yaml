@@ -1,0 +1,69 @@
+dataSources:
+  ds0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    jdbcUrl: jdbc:mysql://localhost:3310/shard0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    driverClassName: com.mysql.cj.jdbc.Driver
+    connectionTimeoutMilliseconds: 3000
+    idleTimeoutMilliseconds: 60000
+    maxPoolSize: 50
+  ds1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    jdbcUrl: jdbc:mysql://localhost:3311/shard1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    driverClassName: com.mysql.cj.jdbc.Driver
+    connectionTimeoutMilliseconds: 3000
+    idleTimeoutMilliseconds: 60000
+    maxPoolSize: 50
+  ds2:
+      dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+      jdbcUrl: jdbc:mysql://localhost:3312/shard2?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+      username: root
+      password: root
+      driverClassName: com.mysql.cj.jdbc.Driver
+      connectionTimeoutMilliseconds: 3000
+      idleTimeoutMilliseconds: 60000
+      maxPoolSize: 50
+
+rules:
+- !SHARDING
+  tables:
+    fruits:
+      actualDataNodes: ds${0..2}.fruit_shard${0..2}
+      # define which column does shard base on
+      tableStrategy:
+        standard:
+          shardingColumn: id
+          shardingAlgorithmName: uuid_inline
+      # auto generate uuid
+      keyGenerateStrategy:
+        column: id
+        keyGeneratorName: auto_uuid
+      # define database sharding algorithms
+      databaseStrategy:
+        standard:
+          shardingColumn: id
+          shardingAlgorithmName: database_inline
+  shardingAlgorithms:
+    uuid_inline:
+      type: CLASS_BASED
+      props:
+        strategy: STANDARD
+        algorithmClassName: com.example.demo.UUIDPreciseShardingAlgorithm
+        algorithm-expression: fruit_shard${id % 3} # 3 is number of shard tables
+    database_inline:
+      type: CLASS_BASED
+      props:
+        strategy: STANDARD
+        algorithmClassName: com.example.demo.UUIDPreciseShardingAlgorithm
+        algorithm-expression: ds${id % 3} # 3 is number of shard datbase
+  keyGenerators:
+    auto_uuid:
+      type: UUID
+
+mode:
+  type: Standalone
+  repository:
+    type: JDBC

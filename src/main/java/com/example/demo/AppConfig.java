@@ -11,11 +11,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 
 @Configuration
 public class AppConfig {
-    @Value("classpath:shard.yaml")
+    @Value("classpath:database_shard.yaml")
     private Resource shardYamlFile;
 
     @Bean
@@ -26,5 +28,10 @@ public class AppConfig {
     @Bean
     JdbcTemplate shardingSphereJdbcTemplate(DataSource shardingSphereDataSource) {
         return new JdbcTemplate(shardingSphereDataSource);
+    }
+
+    @Bean
+    Logger logger() {
+        return LogManager.getLogger(); 
     }
 }
