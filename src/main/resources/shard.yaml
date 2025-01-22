@@ -1,0 +1,60 @@
+dataSources:
+  ds0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    jdbcUrl: jdbc:mysql://0.0.0.0:3306/db_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    driverClassName: com.mysql.cj.jdbc.Driver
+    connectionTimeoutMilliseconds: 3000
+    idleTimeoutMilliseconds: 60000
+    maxPoolSize: 50
+  ds1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    jdbcUrl: jdbc:mysql://0.0.0.0:3306/db_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    driverClassName: com.mysql.cj.jdbc.Driver
+    connectionTimeoutMilliseconds: 3000
+    idleTimeoutMilliseconds: 60000
+    maxPoolSize: 50
+
+rules:
+- !SHARDING
+  tables:
+    users:
+      actualDataNodes: ds${0..1}.users_${0..1}
+      # define which column does shard base on
+      tableStrategy:
+        standard:
+          shardingColumn: uuid
+          shardingAlgorithmName: uuid_inline
+      # auto generate uuid
+      keyGenerateStrategy:
+        column: uuid
+        keyGeneratorName: auto_uuid
+      # define database sharding algorithms
+      databaseStrategy:
+        standard:
+          shardingColumn: uuid
+          shardingAlgorithmName: database_inline
+  shardingAlgorithms:
+    uuid_inline:
+      type: CLASS_BASED
+      props:
+        strategy: STANDARD
+        algorithmClassName: com.example.demo.UUIDPreciseShardingAlgorithm
+        algorithm-expression: users_${uuid % 2} # 2 is number of shard tables, currently there are two shard table
+    database_inline:
+      type: CLASS_BASED
+      props:
+        strategy: STANDARD
+        algorithmClassName: com.example.demo.UUIDPreciseShardingAlgorithm
+        algorithm-expression: ds${uuid % 2}
+  keyGenerators:
+    auto_uuid:
+      type: UUID
+
+mode:
+  type: Standalone
+  repository:
+    type: JDBC
