@@ -4,3 +4,11 @@
 - Sharding configuration referrence -> https://shardingsphere.apache.org/document/5.5.1/en/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/
 - Understanding shardingsphere mode -> https://shardingsphere.apache.org/document/5.5.1/en/dev-manual/mode/
 - Unserstanding governance (dont know what it is, used in cluster mode) -> https://shardingsphere.apache.org/document/5.0.0/en/features/governance/
+
+# Galleries
+
+### image 1
+![alt text](pictures/shard_image_1.png)
+
+### image 2
+![alt text](pictures/shard_image_2.png)
